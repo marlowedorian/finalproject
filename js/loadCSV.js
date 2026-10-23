@@ -1,60 +1,74 @@
-let currentScreen = 'home'; // 'home', 'platform', 'summary'
+
+let currentScreen = 'home';
+let previousScreen = 'home';
 let selectedPlatform = null;
+
 let score = 0;
 let totalGuessed = 0;
-
-// Data structure with exact image filenames from your folder
-const platformData = {
-  "Prime Video": {
-    color: [0, 168, 204],
-    movies: [
-    { genre: "Comedy", title: "The Bachelorette", rating: "9/10", numericRating: 9, rewatch: "YES", 
-    imgName: "Bachelorette.jpeg" },
-    { genre: "Romance", title: "The Last Sunrise", rating: "10/10", numericRating: 10, rewatch: "YES", imgName: "thelastsunrise.jpeg" },
-    { genre: "Fantasy", title: "The Princess Bride", rating: "10/10", numericRating: 10, rewatch: "YES", imgName: "pirncessbride.jpeg" },
-    { genre: "Reality", title: "The Hills", rating: "10/10", numericRating: 10, rewatch: "YES", imgName: "thehills.jpeg" }
-    ]
-  },
-  "Netflix": {
-    color: [229, 9, 20],
-    movies: [
-    { genre: "Comedy", title: "21 Jump Street", rating: "8/10", numericRating: 8, rewatch: "YES", imgName: "21jumpstreet.jpeg" },
-    { genre: "Romance", title: "He's All That", rating: "3/10", numericRating: 3, rewatch: "NO", imgName: "He'sAllThat.jpeg" },
-    { genre: "Fantasy", title: "The School for Good and Evil", rating: "8/10", numericRating: 8, rewatch: "NO", imgName: "theschoolofgoodandevil.jpeg" },
-    { genre: "Reality", title: "Love Is Blind", rating: "2/10", numericRating: 2, rewatch: "NO", imgName: "loveisblind.jpeg" }
-    ]
-  },
-  "Hulu": {
-    color: [28, 231, 131],
-    movies: [
-    { genre: "Comedy", title: "Jumanji", rating: "10/10", numericRating: 10, rewatch: "YES", imgName: "jumaji.jpeg" },
-    { genre: "Romance", title: "No Hard Feelings", rating: "7/10", numericRating: 7, rewatch: "YES", imgName: "nohardfeeling.jpeg" },
-    { genre: "Fantasy", title: "Ghostbusters", rating: "8/10", numericRating: 8, rewatch: "YES", imgName: "ghostbusters.jpeg" },
-    { genre: "Reality", title: "The Kardashians", rating: "9/10", numericRating: 9, rewatch: "YES", imgName: "keepingupwiththekardashians.jpeg" }
-    ]
-  },
-  "Peacock": {
-    color: [0, 114, 206],
-    movies: [
-    { genre: "Comedy", title: "How the Grinch Stole Christmas", rating: "10/10", numericRating: 10, rewatch: "YES", imgName: "thegrinch.jpeg" },
-    { genre: "Romance", title: "Reminders of Him", rating: "6/10", numericRating: 6, rewatch: "NO", imgName: "remindersofhim.jpeg" },
-    { genre: "Fantasy", title: "Harry Potter", rating: "10/10", numericRating: 10, rewatch: "YES", imgName: "harrypotter.jpeg" },
-    { genre: "Reality", title: "Love Island", rating: "6/10", numericRating: 6, rewatch: "YES", imgName: "loveisland.jpeg" }
-    ]
-  }
-}
-
-// Scattered layout coordinates for the 4 movie cards across the screen
-const scatteredPositions = [
-{ x: 120, y: 110 }, // Top-Left
-{ x: 540, y: 110 }, // Top-Right
-{ x: 120, y: 410 }, // Bottom-Left
-{ x: 540, y: 410 }  // Bottom-Right
-];
 
 let userAnswers = {};
 let loadedImages = {};
 
+// DESCRIPTION BUTTON
+let descriptionButtonX = 790;
+let descriptionButtonY = 20;
+
+// ANIMATIONS
+let confetti = [];
+let thumbsDown = [];
+
+
+const platformData = {
+  "Prime Video": {
+    color: [0, 168, 204],
+    movies: [
+      { genre: "Comedy", title: "The Bachelorette", rating: "9/10", numericRating: 9, rewatch: "YES", imgName: "Bachelorette.jepg" },
+      { genre: "Romance", title: "The Last Sunrise", rating: "10/10", numericRating: 10, rewatch: "YES", imgName: "thelastsunrise.jpeg" },
+      { genre: "Fantasy", title: "The Princess Bride", rating: "10/10", numericRating: 10, rewatch: "YES", imgName: "pirncessbride.jpg" },
+      { genre: "Reality", title: "The Hills", rating: "10/10", numericRating: 10, rewatch: "YES", imgName: "thehills.jpeg" }
+    ]
+  },
+
+  "Netflix": {
+    color: [229, 9, 20],
+    movies: [
+      { genre: "Comedy", title: "21 Jump Street", rating: "8/10", numericRating: 8, rewatch: "YES", imgName: "21jumpstreet.jpeg" },
+      { genre: "Romance", title: "He's All That", rating: "3/10", numericRating: 3, rewatch: "NO", imgName: "He's_All_That.jpeg" },
+      { genre: "Fantasy", title: "The School for Good and Evil", rating: "8/10", numericRating: 8, rewatch: "NO", imgName: "theschoolofgoodandevil.jpeg" },
+      { genre: "Reality", title: "Love Is Blind", rating: "2/10", numericRating: 2, rewatch: "NO", imgName: "loveisblind.jpeg" }
+    ]
+  },
+
+  "Hulu": {
+    color: [28, 231, 131],
+    movies: [
+      { genre: "Comedy", title: "Jumanji", rating: "10/10", numericRating: 10, rewatch: "YES", imgName: "jumaji.jpeg" },
+      { genre: "Romance", title: "No Hard Feelings", rating: "7/10", numericRating: 7, rewatch: "YES", imgName: "nohardfeeling.jpeg" },
+      { genre: "Fantasy", title: "Ghostbusters", rating: "8/10", numericRating: 8, rewatch: "YES", imgName: "ghostbusters.jpeg" },
+      { genre: "Reality", title: "The Kardashians", rating: "9/10", numericRating: 9, rewatch: "YES", imgName: "keepingupwiththekardashians.jpeg" }
+    ]
+  },
+
+  "Peacock": {
+    color: [0, 114, 206],
+    movies: [
+      { genre: "Comedy", title: "How the Grinch Stole Christmas", rating: "10/10", numericRating: 10, rewatch: "YES", imgName: "thegrinch.jpeg" },
+      { genre: "Romance", title: "Reminders of Him", rating: "6/10", numericRating: 6, rewatch: "NO", imgName: "remindersofhim.jpeg" },
+      { genre: "Fantasy", title: "Harry Potter", rating: "10/10", numericRating: 10, rewatch: "YES", imgName: "harrypotter.jpeg" },
+      { genre: "Reality", title: "Love Island", rating: "6/10", numericRating: 6, rewatch: "YES", imgName: "loveisland.jpeg" }
+    ]
+  }
+};
+
+// MOVIE POSITIONS
+const scatteredPositions = [
+  { x: 100, y: 120 },
+  { x: 540, y: 120 },
+  { x: 100, y: 420 },
+  { x: 540, y: 420 }
+];
+
+// SETUP
 function setup() {
   createCanvas(1000, 750);
   textAlign(CENTER, CENTER);
@@ -63,14 +77,12 @@ function setup() {
     loadedImages[pName] = [];
 
     for (let m of platformData[pName].movies) {
+      let imagePath = 'images/' + m.imgName;
+
       let img = loadImage(
-        "images/" + m.imgName,
-        function() {
-          // Image loaded successfully
-        },
-        function() {
-          // Image could not be found
-        }
+        imagePath,
+        () => console.log("SUCCESS: " + imagePath),
+        () => console.error("IMAGE NOT FOUND: " + imagePath)
       );
 
       loadedImages[pName].push(img);
@@ -78,9 +90,10 @@ function setup() {
   }
 }
 
-
+// DRAW
 function draw() {
   background(25, 30, 42);
+  textAlign(CENTER, CENTER);
 
   if (currentScreen === 'home') {
     drawHomeScreen();
@@ -88,255 +101,387 @@ function draw() {
     drawPlatformScreen();
   } else if (currentScreen === 'summary') {
     drawSummaryScreen();
+  } else if (currentScreen === 'description') {
+    drawDescriptionScreen();
   }
+
+  // HOT PINK DESCRIPTION BUTTON
+  if (currentScreen !== 'description') {
+    noStroke();
+    fill(255, 20, 147);
+    rect(descriptionButtonX, descriptionButtonY, 185, 45, 10);
+
+    fill(255);
+    textStyle(BOLD);
+    textSize(16);
+    text(
+      "My Description",
+      descriptionButtonX + 92.5,
+      descriptionButtonY + 22.5
+    );
+    textStyle(NORMAL);
+  }
+
+  // ANIMATIONS
+  drawConfetti();
+  drawThumbsDown();
 }
 
-// 1. HOME SCREEN
+// HOME SCREEN
 function drawHomeScreen() {
   fill(255);
-  textSize(32);
+  noStroke();
   textStyle(BOLD);
-  text("Which Streaming Platform Knows Me Best?", width / 2, 80);
-  
-  textSize(16);
+  textSize(32);
+  text(
+    "Which Streaming Platform Knows Me Best?",
+    width / 2,
+    80
+  );
+
   textStyle(NORMAL);
+  textSize(16);
   fill(180, 190, 210);
-  text("Choose a streaming platform to explore what they think i will like!", width / 2, 125);
+  text(
+    "Choose a streaming platform and guess my movie taste!",
+    width / 2,
+    125
+  );
 
   let keys = Object.keys(platformData);
-  let startX = 250;
-  let startY = 280;
-  let spacingX = 300;
 
   for (let i = 0; i < keys.length; i++) {
     let pName = keys[i];
     let col = platformData[pName].color;
-    
-    let x = startX + (i % 2) * spacingX;
-    let y = startY + Math.floor(i / 2) * 190;
 
-    let d = dist(mouseX, mouseY, x, y);
-    let radius = d < 70 ? 150 : 140;
+    let x = 250 + (i % 2) * 300;
+    let y = 280 + Math.floor(i / 2) * 190;
+
+    let hovering = dist(mouseX, mouseY, x, y) < 75;
 
     fill(col[0], col[1], col[2]);
-    noStroke();
-    ellipse(x, y, radius, radius);
+    ellipse(x, y, hovering ? 150 : 140);
 
     fill(255);
     textSize(20);
     textStyle(BOLD);
     text(pName, x, y);
-    textStyle(NORMAL);
   }
 
-  fill(60, 120, 200);
-  rect(width / 2 - 110, 650, 220, 45, 10);
-  fill(255);
-  textSize(16);
-  textStyle(BOLD);
-  text("Finish & View Results", width / 2, 672);
-  textStyle(NORMAL);
+  drawButton(390, 650, 220, 45, "Finish & View Results");
 }
 
-// 2 & 3. SCATTERED MOVIE & GUESSING SCREEN
+// MOVIE SCREEN
 function drawPlatformScreen() {
-  fill(255);
-  textSize(24);
-  textStyle(BOLD);
-  text(selectedPlatform + " - Scattered Movie Taste", width / 2, 35);
-
-  textSize(15);
-  textStyle(NORMAL);
-  fill(180, 190, 210);
-  text("Score: " + score + " / " + totalGuessed, width / 2, 65);
-
   let movies = platformData[selectedPlatform].movies;
   let imgList = loadedImages[selectedPlatform];
-  let cardWidth = 340;
-  let cardHeight = 270;
+
+  fill(255);
+  noStroke();
+  textStyle(BOLD);
+  textSize(25);
+  text(
+    selectedPlatform + " - Guess My Movie Taste!",
+    width / 2,
+    35
+  );
+
+  textStyle(NORMAL);
+  textSize(15);
+  fill(180, 190, 210);
+  text(
+    "Score: " + score + " / " + totalGuessed,
+    width / 2,
+    70
+  );
 
   for (let i = 0; i < movies.length; i++) {
     let m = movies[i];
     let pos = scatteredPositions[i];
+
     let x = pos.x;
     let y = pos.y;
 
-    // Card background
-    fill(35, 42, 60);
-    stroke(60, 70, 95);
-    strokeWeight(1);
-    rect(x, y, cardWidth, cardHeight, 10);
+    let key = selectedPlatform + "-" + i;
+    let answer = userAnswers[key];
 
-    // Render local image if successfully loaded, otherwise show fallback box
-  
-let loadedImg = imgList[i];
+    let loadedImg = imgList[i];
 
-if (loadedImg && loadedImg.width > 0) {
+    // MOVIE POSTER
+    if (loadedImg && loadedImg.width > 0) {
+      imageMode(CORNER);
+      image(loadedImg, x, y, 120, 170);
+    } else {
+      fill(65, 75, 95);
+      noStroke();
+      rect(x, y, 120, 170, 5);
 
-  image(
-    loadedImg,
-    x + 12,
-    y + 12,
-    110,
-    cardHeight - 24
-  );
+      fill(255);
+      textSize(12);
+      text("No Image", x + 60, y + 85);
+    }
 
-} else {
-
-  fill(50, 60, 80);
-  noStroke();
-  rect(x + 12, y + 12, 110, cardHeight - 24, 6);
-
-  fill(255);
-  textSize(10);
-  text(
-    "Poster not found",
-    x + 67,
-    y + cardHeight / 2
-  );
-}
-    // Movie details on the right side of the card
+    // MOVIE TITLE
+    fill(255);
     noStroke();
+    textStyle(BOLD);
+    textSize(17);
+    text(m.title, x + 245, y + 15, 220);
+
+    textStyle(NORMAL);
+    textSize(13);
+    fill(180, 190, 210);
+    text(m.genre, x + 245, y + 48);
+
+    // RATING QUESTION
+    fill(255);
+    textSize(14);
+    text("Guess my rating (1-10)", x + 245, y + 80);
+
+    // RATING BUTTONS
+    for (let r = 1; r <= 10; r++) {
+      let bx = x + 125 + (r - 1) * 23;
+      let by = y + 105;
+
+      let chosen = answer && answer.rating === r;
+
+      fill(
+        chosen
+          ? color(255, 20, 147)
+          : color(65, 75, 95)
+      );
+
+      noStroke();
+      rect(bx, by, 21, 27, 4);
+
+      fill(255);
+      textSize(11);
+      text(r, bx + 10.5, by + 13.5);
+    }
+
+    // REWATCH QUESTION
+    fill(255);
+    textSize(14);
+    text("Would I rewatch it?", x + 245, y + 165);
+
+    let yesSelected = answer && answer.rewatch === "YES";
+    let noSelected = answer && answer.rewatch === "NO";
+
+    fill(
+      yesSelected
+        ? color(28, 190, 110)
+        : color(65, 75, 95)
+    );
+    rect(x + 155, y + 185, 75, 30, 6);
+
     fill(255);
     textSize(13);
-    textStyle(BOLD);
-    text(m.title, x + 230, y + 30);
-    
-    textStyle(NORMAL);
-    textSize(11);
-    fill(200, 210, 230);
-    text(m.genre + " · Rating: " + m.rating, x + 230, y + 55);
+    text("YES", x + 192, y + 200);
 
-    // Question
-    textSize(11);
+    fill(
+      noSelected
+        ? color(229, 60, 70)
+        : color(65, 75, 95)
+    );
+    rect(x + 240, y + 185, 75, 30, 6);
+
     fill(255);
-    text("Would I watch again?", x + 230, y + 90);
+    text("NO", x + 277, y + 200);
 
-    let ansState = userAnswers[m.title];
-
-    if (!ansState) {
-      // YES Button
-      fill(46, 204, 113);
-      rect(x + 140, y + 120, 85, 35, 6);
-      fill(255);
-      textStyle(BOLD);
-      text("YES", x + 182, y + 138);
-
-      // NO Button
-      fill(231, 76, 60);
-      rect(x + 238, y + 120, 85, 35, 6);
-      fill(255);
-      text("NO", x + 280, y + 138);
-      textStyle(NORMAL);
-    } else {
-      if (ansState.correct) {
-        fill(46, 204, 113);
-        textSize(13);
-        textStyle(BOLD);
-        text("✓ Correct!", x + 235, y + 137);
-      } else {
-        fill(231, 76, 60);
-        textSize(13);
-        textStyle(BOLD);
-        text("✗ Incorrect!", x + 235, y + 125);
-        textStyle(NORMAL);
-        textSize(10);
-        fill(220, 220, 220);
-        text("Answer: " + m.rewatch, x + 235, y + 150);
-      }
+    // REVEAL ANSWERS
+    if (answer && answer.submitted) {
+      fill(28, 231, 131);
+      textSize(13);
+      text(
+        "Actual rating: " + m.rating +
+        " | Rewatch: " + m.rewatch,
+        x + 245,
+        y + 245
+      );
     }
   }
 
-  // Back button at bottom center
-  fill(100, 110, 130);
-  noStroke();
-  rect(width / 2 - 90, 690, 180, 42, 10);
-  fill(255);
-  textSize(14);
-  text("← Back to Platforms", width / 2, 711);
+  drawButton(20, 20, 80, 40, "Back");
 }
 
-// 4 & 5. SUMMARY SCREEN
+// SUMMARY SCREEN
 function drawSummaryScreen() {
   fill(255);
-  textSize(30);
-  textStyle(BOLD);
-  text("Final Results & Analysis", width / 2, 65);
-
-  textSize(17);
-  textStyle(NORMAL);
-  fill(180, 190, 210);
-  text("Total Score: " + score + " out of " + totalGuessed + " correct guesses.", width / 2, 105);
-
-  let bestPlatform = "Prime Video";
-  let highestAvg = 9.75;
-
-  fill(35, 42, 60);
-  stroke(60, 70, 95);
-  rect(150, 140, 700, 440, 15);
-
-  let winCol = platformData[bestPlatform].color;
-  fill(winCol[0], winCol[1], winCol[2]);
   noStroke();
-  rect(150, 140, 700, 60, 15, 15, 0, 0);
-
-  fill(255);
-  textSize(22);
   textStyle(BOLD);
-  text("🏆 WINNER: " + bestPlatform + " Knows You Best!", width / 2, 170);
+  textSize(30);
+  text("Which Platform Knows Me Best?", width / 2, 75);
 
-  textSize(16);
-  fill(210, 220, 240);
   textStyle(NORMAL);
-  text("Average Rating: " + highestAvg.toFixed(2) + " / 10   |   Rewatch Rate: 100%", width / 2, 230);
+  textSize(18);
+  text(
+    "Your Guessing Score: " + score + " / " + totalGuessed,
+    width / 2,
+    130
+  );
 
-  textSize(14);
-  fill(190, 200, 220);
-  let summaryText = 
-  "How the platforms compare based on your movie data:\n\n" +
-  "• Prime Video (Winner): Average rating of 9.75/10 with 100% rewatch interest.\n" +
-  "• Hulu: Strong runner-up with an average rating of 8.5/10 and high rewatchability.\n" +
-  "• Peacock: Mixed results (7.75/10 average) with specialized favorites like Harry Potter.\n" +
-  "• Netflix: Lowest average rating (5.25/10) with the fewest rewatchable titles.\n\n" +
-  "Conclusion: Prime Video aligns best with your taste across all genres!";
+  let keys = Object.keys(platformData);
+  let bestPlatform = "";
+  let bestAverage = -1;
 
-  text(summaryText, width / 2, 380);
+  for (let i = 0; i < keys.length; i++) {
+    let pName = keys[i];
+    let movies = platformData[pName].movies;
 
-  fill(46, 204, 113);
-  rect(width / 2 - 100, 620, 200, 45, 10);
-  fill(255);
-  textSize(16);
+    let total = 0;
+
+    for (let m of movies) {
+      total += m.numericRating;
+    }
+
+    let average = total / movies.length;
+
+    if (average > bestAverage) {
+      bestAverage = average;
+      bestPlatform = pName;
+    }
+
+    let y = 230 + i * 85;
+    let col = platformData[pName].color;
+
+    fill(col[0], col[1], col[2]);
+    rect(240, y, average * 50, 35, 8);
+
+    fill(255);
+    textSize(16);
+    textStyle(NORMAL);
+    text(
+      pName + " - " + average.toFixed(1) + "/10",
+      500,
+      y + 50
+    );
+  }
+
+  fill(28, 231, 131);
+  textSize(21);
   textStyle(BOLD);
-  text("Play Again", width / 2, 642);
+  text(
+    "My Favorite Platform: " + bestPlatform,
+    width / 2,
+    630
+  );
+
+  drawButton(390, 675, 220, 45, "Back to Home");
+}
+
+// MY DESCRIPTION SCREEN
+function drawDescriptionScreen() {
+  background(25, 30, 42);
+
+  fill(255, 20, 147);
+  noStroke();
+  textAlign(CENTER, CENTER);
+  textStyle(BOLD);
+  textSize(38);
+  text("My Movie Personality", width / 2, 140);
+
+  stroke(255, 20, 147);
+  strokeWeight(3);
+  line(280, 190, 720, 190);
+  noStroke();
+
+  let description =
+    "I would describe myself as a nostalgic, comfort-movie watcher. " +
+    "I love comedies, family movies, and fantasy films that remind me of my childhood. " +
+    "I tend to enjoy movies that make me laugh, have a little adventure, and allow me to escape reality. " +
+    "I also love rewatching my favorite movies rather than always choosing something new. " +
+    "Overall, I value nostalgia, humor, and the feeling a movie gives me more than anything else.";
+
+  fill(255);
+  textStyle(NORMAL);
+  textSize(21);
+  textLeading(36);
+  text(description, 180, 245, 640, 310);
+
+  fill(255, 20, 147);
+  rect(390, 620, 220, 50, 12);
+
+  fill(255);
+  textSize(18);
+  textStyle(BOLD);
+  text("Back", 500, 645);
   textStyle(NORMAL);
 }
 
-// MOUSE CLICK HANDLING
+// BUTTON DRAWING
+function drawButton(x, y, w, h, label) {
+  noStroke();
+  fill(60, 120, 200);
+  rect(x, y, w, h, 8);
+
+  fill(255);
+  textStyle(NORMAL);
+  textSize(15);
+  text(label, x + w / 2, y + h / 2);
+}
+
+// CLICKING
 function mousePressed() {
+
+  // DESCRIPTION BUTTON
+  if (currentScreen !== 'description') {
+    if (
+      mouseX >= descriptionButtonX &&
+      mouseX <= descriptionButtonX + 185 &&
+      mouseY >= descriptionButtonY &&
+      mouseY <= descriptionButtonY + 45
+    ) {
+      previousScreen = currentScreen;
+      currentScreen = 'description';
+      return;
+    }
+  }
+
+  // DESCRIPTION BACK BUTTON
+  if (currentScreen === 'description') {
+    if (
+      mouseX >= 390 && mouseX <= 610 &&
+      mouseY >= 620 && mouseY <= 670
+    ) {
+      currentScreen = previousScreen;
+      return;
+    }
+  }
+
+  // HOME SCREEN
   if (currentScreen === 'home') {
     let keys = Object.keys(platformData);
-    let startX = 250;
-    let startY = 280;
-    let spacingX = 300;
 
     for (let i = 0; i < keys.length; i++) {
-      let x = startX + (i % 2) * spacingX;
-      let y = startY + Math.floor(i / 2) * 190;
-      let d = dist(mouseX, mouseY, x, y);
-      
-      if (d < 70) {
+      let x = 250 + (i % 2) * 300;
+      let y = 280 + Math.floor(i / 2) * 190;
+
+      if (dist(mouseX, mouseY, x, y) < 75) {
         selectedPlatform = keys[i];
         currentScreen = 'platform';
+        return;
       }
     }
 
-    if (mouseX > width / 2 - 110 && mouseX < width / 2 + 110 && mouseY > 650 && mouseY < 695) {
+    if (
+      mouseX > 390 && mouseX < 610 &&
+      mouseY > 650 && mouseY < 695
+    ) {
       currentScreen = 'summary';
+      return;
     }
+  }
 
-  } else if (currentScreen === 'platform') {
-    if (mouseX > width / 2 - 90 && mouseX < width / 2 + 90 && mouseY > 690 && mouseY < 732) {
+  // PLATFORM SCREEN
+  if (currentScreen === 'platform') {
+
+    // BACK BUTTON
+    if (
+      mouseX > 20 && mouseX < 100 &&
+      mouseY > 20 && mouseY < 60
+    ) {
       currentScreen = 'home';
+      selectedPlatform = null;
       return;
     }
 
@@ -345,34 +490,202 @@ function mousePressed() {
     for (let i = 0; i < movies.length; i++) {
       let m = movies[i];
       let pos = scatteredPositions[i];
+
       let x = pos.x;
       let y = pos.y;
 
-      if (userAnswers[m.title]) continue;
+      let key = selectedPlatform + "-" + i;
 
-      if (mouseX >= x + 140 && mouseX <= x + 225 && mouseY >= y + 120 && mouseY <= y + 155) {
-        checkAnswer(m, "YES");
+      if (!userAnswers[key]) {
+        userAnswers[key] = {
+          rating: null,
+          rewatch: null,
+          submitted: false,
+          animationShown: false
+        };
       }
-      if (mouseX >= x + 238 && mouseX <= x + 323 && mouseY >= y + 120 && mouseY <= y + 155) {
-        checkAnswer(m, "NO");
+
+      let answer = userAnswers[key];
+
+      if (answer.submitted) {
+        continue;
+      }
+
+      // RATING BUTTONS
+      for (let r = 1; r <= 10; r++) {
+        let bx = x + 125 + (r - 1) * 23;
+        let by = y + 105;
+
+        if (
+          mouseX >= bx && mouseX <= bx + 21 &&
+          mouseY >= by && mouseY <= by + 27
+        ) {
+          answer.rating = r;
+          checkAnswer(key, m);
+          return;
+        }
+      }
+
+      // YES BUTTON
+      if (
+        mouseX >= x + 155 && mouseX <= x + 230 &&
+        mouseY >= y + 185 && mouseY <= y + 215
+      ) {
+        answer.rewatch = "YES";
+
+        if (!answer.animationShown) {
+          if (answer.rewatch === m.rewatch) {
+            makeConfetti();
+          } else {
+            makeThumbsDown();
+          }
+          answer.animationShown = true;
+        }
+
+        checkAnswer(key, m);
+        return;
+      }
+
+      // NO BUTTON
+      if (
+        mouseX >= x + 240 && mouseX <= x + 315 &&
+        mouseY >= y + 185 && mouseY <= y + 215
+      ) {
+        answer.rewatch = "NO";
+
+        if (!answer.animationShown) {
+          if (answer.rewatch === m.rewatch) {
+            makeConfetti();
+          } else {
+            makeThumbsDown();
+          }
+          answer.animationShown = true;
+        }
+
+        checkAnswer(key, m);
+        return;
       }
     }
+  }
 
-  } else if (currentScreen === 'summary') {
-    if (mouseX > width / 2 - 100 && mouseX < width / 2 + 100 && mouseY > 620 && mouseY < 665) {
+  // SUMMARY SCREEN
+  if (currentScreen === 'summary') {
+    if (
+      mouseX > 390 && mouseX < 610 &&
+      mouseY > 675 && mouseY < 720
+    ) {
       currentScreen = 'home';
-      userAnswers = {};
-      score = 0;
-      totalGuessed = 0;
+      return;
     }
   }
 }
 
-function checkAnswer(movie, guess) {
-  let isCorrect = (guess === movie.rewatch);
-  userAnswers[movie.title] = { guessed: guess, correct: isCorrect };
-  totalGuessed++;
-  if (isCorrect) {
+// CHECK ANSWERS AND UPDATE SCORE
+function checkAnswer(key, movie) {
+  let answer = userAnswers[key];
+
+  if (answer.rating === null || answer.rewatch === null) {
+    return;
+  }
+
+  if (answer.submitted) {
+    return;
+  }
+
+  answer.submitted = true;
+
+  if (answer.rating === movie.numericRating) {
     score++;
+  }
+  totalGuessed++;
+
+  if (answer.rewatch === movie.rewatch) {
+    score++;
+  }
+  totalGuessed++;
+}
+
+// CREATE CONFETTI
+function makeConfetti() {
+  for (let i = 0; i < 180; i++) {
+    confetti.push({
+      x: random(width),
+      y: random(-350, -10),
+      speed: random(3, 9),
+      size: random(5, 12),
+      drift: random(-1.5, 1.5),
+      rotation: random(TWO_PI),
+      spin: random(-0.1, 0.1),
+      pieceColor: color(
+        random(100, 255),
+        random(50, 255),
+        random(100, 255)
+      )
+    });
+  }
+}
+
+// DRAW CONFETTI
+function drawConfetti() {
+  for (let i = confetti.length - 1; i >= 0; i--) {
+    let c = confetti[i];
+
+    push();
+    translate(c.x, c.y);
+    rotate(c.rotation);
+
+    noStroke();
+    fill(c.pieceColor);
+    rect(0, 0, c.size, c.size * 0.6);
+
+    pop();
+
+    c.y += c.speed;
+    c.x += c.drift;
+    c.rotation += c.spin;
+
+    if (c.y > height + 20) {
+      confetti.splice(i, 1);
+    }
+  }
+}
+
+// CREATE THUMBS-DOWN EMOJIS
+function makeThumbsDown() {
+  for (let i = 0; i < 35; i++) {
+    thumbsDown.push({
+      x: random(width),
+      y: random(-400, -20),
+      speed: random(2, 6),
+      size: random(25, 45),
+      drift: random(-1, 1),
+      rotation: random(-0.3, 0.3)
+    });
+  }
+}
+
+// DRAW FALLING THUMBS-DOWN EMOJIS
+function drawThumbsDown() {
+  for (let i = thumbsDown.length - 1; i >= 0; i--) {
+    let t = thumbsDown[i];
+
+    push();
+    translate(t.x, t.y);
+    rotate(t.rotation);
+
+    textAlign(CENTER, CENTER);
+    textStyle(NORMAL);
+    textSize(t.size);
+    fill(255);
+    text("👎", 0, 0);
+
+    pop();
+
+    t.y += t.speed;
+    t.x += t.drift;
+
+    if (t.y > height + 50) {
+      thumbsDown.splice(i, 1);
+    }
   }
 }
